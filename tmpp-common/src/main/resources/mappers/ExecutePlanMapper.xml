@@ -79,13 +79,13 @@
     </delete>
     <insert id="insert" parameterType="top.sl.tmpp.common.entity.ExecutePlan">
         insert into execute_plan (id, year, term, grade,
-                                  status, file_type, level_id,
-                                  department_id, gmt_modified, gmt_create,
-                                  file)
+        status, file_type, level_id,
+        department_id, gmt_modified, gmt_create,
+        file)
         values (#{id,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, #{term,jdbcType=BIT}, #{grade,jdbcType=INTEGER},
-                #{status,jdbcType=BIT}, #{fileType,jdbcType=VARCHAR}, #{levelId,jdbcType=VARCHAR},
-                #{departmentId,jdbcType=VARCHAR}, #{gmtModified,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP},
-                #{file,jdbcType=LONGVARBINARY})
+        #{status,jdbcType=BIT}, #{fileType,jdbcType=VARCHAR}, #{levelId,jdbcType=VARCHAR},
+        #{departmentId,jdbcType=VARCHAR}, #{gmtModified,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP},
+        #{file,jdbcType=LONGVARBINARY})
     </insert>
     <insert id="insertSelective" parameterType="top.sl.tmpp.common.entity.ExecutePlan">
         insert into execute_plan
@@ -198,29 +198,29 @@
     </update>
     <update id="updateByPrimaryKeyWithBLOBs" parameterType="top.sl.tmpp.common.entity.ExecutePlan">
         update execute_plan
-        set year          = #{year,jdbcType=VARCHAR},
-            term          = #{term,jdbcType=BIT},
-            grade         = #{grade,jdbcType=INTEGER},
-            status        = #{status,jdbcType=BIT},
-            file_type     = #{fileType,jdbcType=VARCHAR},
-            level_id      = #{levelId,jdbcType=VARCHAR},
-            department_id = #{departmentId,jdbcType=VARCHAR},
-            gmt_modified  = #{gmtModified,jdbcType=TIMESTAMP},
-            gmt_create    = #{gmtCreate,jdbcType=TIMESTAMP},
-            file          = #{file,jdbcType=LONGVARBINARY}
+        set year = #{year,jdbcType=VARCHAR},
+        term = #{term,jdbcType=BIT},
+        grade = #{grade,jdbcType=INTEGER},
+        status = #{status,jdbcType=BIT},
+        file_type = #{fileType,jdbcType=VARCHAR},
+        level_id = #{levelId,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=VARCHAR},
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP},
+        file = #{file,jdbcType=LONGVARBINARY}
         where id = #{id,jdbcType=VARCHAR}
     </update>
     <update id="updateByPrimaryKey" parameterType="top.sl.tmpp.common.entity.ExecutePlan">
         update execute_plan
-        set year          = #{year,jdbcType=VARCHAR},
-            term          = #{term,jdbcType=BIT},
-            grade         = #{grade,jdbcType=INTEGER},
-            status        = #{status,jdbcType=BIT},
-            file_type     = #{fileType,jdbcType=VARCHAR},
-            level_id      = #{levelId,jdbcType=VARCHAR},
-            department_id = #{departmentId,jdbcType=VARCHAR},
-            gmt_modified  = #{gmtModified,jdbcType=TIMESTAMP},
-            gmt_create    = #{gmtCreate,jdbcType=TIMESTAMP}
+        set year = #{year,jdbcType=VARCHAR},
+        term = #{term,jdbcType=BIT},
+        grade = #{grade,jdbcType=INTEGER},
+        status = #{status,jdbcType=BIT},
+        file_type = #{fileType,jdbcType=VARCHAR},
+        level_id = #{levelId,jdbcType=VARCHAR},
+        department_id = #{departmentId,jdbcType=VARCHAR},
+        gmt_modified = #{gmtModified,jdbcType=TIMESTAMP},
+        gmt_create = #{gmtCreate,jdbcType=TIMESTAMP}
         where id = #{id,jdbcType=VARCHAR}
     </update>
     <select id="selectAll" resultMap="ExecutePlanDTOResultMap">
@@ -229,8 +229,8 @@
                execute_plan.term,
                execute_plan.grade,
                execute_plan.status,
-               level.educational_level   as level,
-               department.name           as department,
+               level.educational_level as level,
+               department.name         as department,
                execute_plan.gmt_modified,
                execute_plan.gmt_create
         from execute_plan
@@ -248,23 +248,60 @@
     </select>
     <select id="selectFileById" resultMap="ResultMapWithBLOBsAndFileType">
         select file_type,
-               file
+        file
         from execute_plan
         where id = #{id,jdbcType=VARCHAR}
     </select>
     <select id="selectByStatus" resultMap="ExecutePlanDTOResultMap">
         select execute_plan.id,
-               execute_plan.year,
-               execute_plan.term,
-               execute_plan.grade,
-               execute_plan.status,
-               level.educational_level   as level,
-               department.name           as department,
-               execute_plan.gmt_modified,
-               execute_plan.gmt_create
+        execute_plan.year,
+        execute_plan.term,
+        execute_plan.grade,
+        execute_plan.status,
+        level.educational_level as level,
+        department.name as department,
+        execute_plan.gmt_modified,
+        execute_plan.gmt_create
         from execute_plan
-                 inner join level on level.id = execute_plan.level_id
-                 inner join department on department.id = execute_plan.department_id
+        inner join level on level.id = execute_plan.level_id
+        inner join department on department.id = execute_plan.department_id
         where execute_plan.status = ${status}
+    </select>
+    <select id="selectByStatusAndTeachingDepartment" resultMap="ExecutePlanDTOResultMap">
+        select execute_plan.id,
+        execute_plan.year,
+        execute_plan.term,
+        execute_plan.grade,
+        execute_plan.status,
+        level.educational_level as level,
+        department.name as department,
+        execute_plan.gmt_modified,
+        execute_plan.gmt_create
+        from execute_plan
+        inner join level on level.id = execute_plan.level_id
+        inner join department on department.id = execute_plan.department_id
+        where execute_plan.status = ${status}
+        <if test="department != null">
+            <choose>
+                <when test="department =='基础部' ">
+                    and department.name in ('数学教研室','英语教研室','思政教研室','计算机基础教研室','公选教研室')
+                </when>
+                <otherwise>
+                    and department.name=#{department}
+                </otherwise>
+            </choose>
+        </if>
+
+    </select>
+    <select id="selectExecutePlan" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List"/>
+        ,
+        <include refid="Blob_Column_List"/>
+        from execute_plan
+        where year = #{year,jdbcType=VARCHAR}
+        and term=#{term,jdbcType=BIT}
+        and department_id=#{department_id,jdbcType=VARCHAR}
+        and level_id=#{level_id,jdbcType=VARCHAR}
     </select>
 </mapper>

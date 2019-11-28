@@ -161,4 +161,16 @@ public class ExportController {
         setDownloadExcelHeader(response, "班级领取教材反馈表.xlsx");
         exportService.studentClassBookTable(executePlanId, response.getOutputStream());
     }
+
+    /**
+     * 征订教材计划单
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/subscription_plan")
+    public void subscriptionPlan(HttpServletResponse response) throws IOException {
+        setDownloadExcelHeader(response, "征订教材计划单.xlsx");
+        exportService.subscriptionPlan(response.getOutputStream());
+    }
+
 }

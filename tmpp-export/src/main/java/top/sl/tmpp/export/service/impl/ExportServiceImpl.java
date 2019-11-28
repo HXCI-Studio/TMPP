@@ -244,9 +244,9 @@ public class ExportServiceImpl implements ExportService {
         row.createCell(7).setCellValue("合计");
         getCellWithStyle(wb, row);
 
-        final String[] headerStrArray = {"", "订购教材课程门数", "课程总门数", "定书率"
-                , "订购教材课程门数", "课程总门数", "定书率"
-                , "订购教材课程门数", "课程总门数", "定书率"};
+        final String[] headerStrArray = {"", "订购教材课程门数", "课程总门数", "订书率"
+                , "订购教材课程门数", "课程总门数", "订书率"
+                , "订购教材课程门数", "课程总门数", "订书率"};
         row = sheet.createRow(1);
         information(headerStrArray, row, 0);
         row = sheet.createRow(2);
@@ -312,6 +312,74 @@ public class ExportServiceImpl implements ExportService {
         }).collect(Collectors.toList());
         getSheetByList(bookMaterialsList, sheet);
         wb.write(outputStream);
+    }
+
+    @Override
+    public void subscriptionPlan(OutputStream outputStream) throws IOException {
+        XSSFWorkbook wb = new XSSFWorkbook();
+        XSSFSheet sheet = wb.createSheet("征订教材汇总表");
+        sheet.setVerticallyCenter(true);
+        sheet.addMergedRegion(new CellRangeAddress(0,0,0,3));
+        XSSFRow row0 = sheet.createRow(0);
+        XSSFCell cell = getCellWithStyle(wb, row0);
+        cell.setCellValue("征订教材计划单");
+
+        sheet.addMergedRegion(new CellRangeAddress(1,1,0,1));
+        sheet.addMergedRegion(new CellRangeAddress(1,1,2,3));
+        XSSFRow row1 = sheet.createRow(1);
+        row1.createCell(0,CellType.STRING).setCellValue("院/系/部");
+        row1.createCell(2,CellType.STRING).setCellValue("填表时间：    年    月   日");
+
+        sheet.addMergedRegion(new CellRangeAddress(2,2,0,3));
+        sheet.createRow(2);
+
+        XSSFRow row3 = sheet.createRow(3);
+        getCellWithStyle(wb,row3);
+        row3.createCell(0,CellType.STRING).setCellValue("教材类别");
+        row3.createCell(1,CellType.STRING).setCellValue("□外购教材     □自编教材");
+        row3.createCell(2,CellType.STRING).setCellValue("课程性质");
+        row3.createCell(3,CellType.STRING).setCellValue("□选修               □必修");
+
+        sheet.addMergedRegion(new CellRangeAddress(4,4,1,3));
+        XSSFRow row4 = sheet.createRow(4);
+        row4.createCell(0,CellType.STRING).setCellValue("教材所属系列");
+
+        XSSFRow row5 = sheet.createRow(5);
+        row5.createCell(0,CellType.STRING).setCellValue("征订单提交人");
+        row5.createCell(2,CellType.STRING).setCellValue("教师教材征订数量");
+
+        sheet.addMergedRegion(new CellRangeAddress(6,6,1,3));
+        XSSFRow row6 = sheet.createRow(6);
+        row6.createCell(0,CellType.STRING).setCellValue("课程名称");
+        row6.createCell(1,CellType.STRING);
+
+        sheet.addMergedRegion(new CellRangeAddress(7,7,1,3));
+        XSSFRow row7 = sheet.createRow(7);
+        row7.createCell(0,CellType.STRING).setCellValue("教材名称");
+        row7.createCell(1,CellType.STRING);
+
+        XSSFRow row8 = sheet.createRow(8);
+        getCellWithStyle(wb,row8);
+        row8.createCell(0,CellType.STRING).setCellValue("出版社");
+        row8.createCell(2,CellType.STRING).setCellValue("作者");
+
+        XSSFRow row9 = sheet.createRow(9);
+        getCellWithStyle(wb,row9);
+        row9.createCell(0,CellType.STRING).setCellValue("单价");
+        row9.createCell(2,CellType.STRING).setCellValue("书号");
+
+        sheet.addMergedRegion(new CellRangeAddress(10,10,0,3));
+        sheet.createRow(10);
+
+        XSSFRow row11 = sheet.createRow(11);
+        getCellWithStyle(wb,row11);
+        row11.createCell(0,CellType.STRING).setCellValue("使用专业");
+        row11.createCell(1,CellType.STRING).setCellValue("使用班级 ");
+        row11.createCell(2,CellType.STRING).setCellValue("使用数量");
+        row11.createCell(3,CellType.STRING).setCellValue("任课教师签字");
+
+        wb.write(outputStream);
+
     }
 
     private XSSFCell getCellWithStyle(XSSFWorkbook wb, XSSFRow row) {

@@ -55,7 +55,7 @@ public interface AcquireService {
      *
      * @return 未完成执行计划集合
      */
-    List<ExecutePlanDTO> getAllUnDoneExecutePlan();
+    List<ExecutePlanDTO> getAllUnDoneExecutePlan(String teachingDepartment);
 
     /**
      * 获取执行计划年

@@ -72,8 +72,8 @@ public class AcquireServiceImpl implements AcquireService {
     }
 
     @Override
-    public List<ExecutePlanDTO> getAllUnDoneExecutePlan() {
-        return executePlanMapper.selectByStatus(false);
+    public List<ExecutePlanDTO> getAllUnDoneExecutePlan(String teachingDepartment) {
+        return executePlanMapper.selectByStatusAndTeachingDepartment(false,teachingDepartment);
     }
 
     @Override

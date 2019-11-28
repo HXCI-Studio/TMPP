@@ -13,6 +13,7 @@ import top.sl.tmpp.common.entity.Department;
 import top.sl.tmpp.common.entity.Level;
 import top.sl.tmpp.common.entity.LoginUser;
 import top.sl.tmpp.common.pojo.CourseDTO;
+import top.sl.tmpp.common.util.DivisionOfAuthorityUtil;
 import top.sl.tmpp.common.util.RestModel;
 
 import java.util.List;
@@ -104,7 +105,7 @@ public class AcquireController {
      */
     @GetMapping("/undone_execute_plan")
     public ResponseEntity<?> undoneExecutePlan(LoginUser loginUser) {
-        return RestModel.ok(acquireService.getAllUnDoneExecutePlan());
+        return RestModel.ok(acquireService.getAllUnDoneExecutePlan(DivisionOfAuthorityUtil.DivisionOfAuthority(loginUser)));
     }
 
     /**
