@@ -83,10 +83,7 @@ public interface ExportService {
      */
     void downBookMaterials(String year, String college, String teachingDepartment, Boolean term, OutputStream outputStream) throws IOException;
 
-    /**
-     * 征订教材计划单
-     */
-    void subscriptionPlan(OutputStream outputStream) throws IOException;
+
 
 
 }

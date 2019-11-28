@@ -13,7 +13,10 @@ import top.sl.tmpp.common.pojo.BookDTO;
 import top.sl.tmpp.common.util.RestModel;
 import top.sl.tmpp.purchase.service.PurchaseService;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,7 +44,16 @@ public class PurchaseController {
         //true:允许输入空值，false:不能为空值
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
-
+    /**
+     * 设置下载Excel文件响应头
+     *
+     * @param response {@link HttpServletResponse}
+     * @param fileName 文件名
+     */
+    private void setDownloadExcelHeader(HttpServletResponse response, String fileName) {
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String(fileName.getBytes(), StandardCharsets.ISO_8859_1));
+        response.setContentType("application/octet-stream");
+    }
     /**
      * 提交购书信息
      *
@@ -162,5 +174,17 @@ public class PurchaseController {
             purchaseService.notBuyBook(loginUser.getId(), executePlanId, courseCode, reason, bookId);
         }
         return RestModel.noContent();
+    }
+    /**
+     * 征订教材计划单
+     * @param response
+     * @throws IOException
+     */
+    @GetMapping("/subscription_plan")
+    public void subscriptionPlan(LoginUser loginUser,
+                                 @RequestParam String executePlanId,
+                                 HttpServletResponse response) throws IOException {
+        setDownloadExcelHeader(response, "征订教材计划单.xlsx");
+        purchaseService.subscriptionPlan(response.getOutputStream(),loginUser.getId(),executePlanId);
     }
 }

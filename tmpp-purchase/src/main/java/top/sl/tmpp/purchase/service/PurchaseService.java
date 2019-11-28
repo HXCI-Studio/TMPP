@@ -3,6 +3,8 @@ package top.sl.tmpp.purchase.service;
 import com.github.pagehelper.PageInfo;
 import top.sl.tmpp.common.pojo.BookDTO;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -56,4 +58,10 @@ public interface PurchaseService {
      * @return 教师购书
      */
     PageInfo<BookDTO> getAllTeacherBooks(String loginUserId, String executePlanId, int page, int size);
+
+
+    /**
+     * 征订教材计划单
+     */
+    void subscriptionPlan(OutputStream outputStream,String loginUserId, String executePlanId) throws IOException;
 }
