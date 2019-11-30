@@ -22,6 +22,7 @@ import top.sl.tmpp.purchase.service.PurchaseService;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -162,6 +163,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         List<BookDTO> bookDTOS = bookMapper.selectMyBook(loginUserId, executePlanId);
         Department department = departmentMapper.selectByPrimaryKey(executePlanMapper.selectByPrimaryKey(executePlanId).getDepartmentId());
+        ExecutePlan executePlan = executePlanMapper.selectByPrimaryKey(executePlanId);
 
         int k=1;
         for (int i = 0; i < bookDTOS.size(); i++) {
@@ -174,13 +176,17 @@ public class PurchaseServiceImpl implements PurchaseService {
                 sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
                 XSSFRow row0 = sheet.createRow(0);
                 XSSFCell cell = getCellWithStyle(wb, row0);
-                cell.setCellValue("征订教材计划单");
+                cell.setCellValue(executePlan.getYear()+"学年第"+(executePlan.getTerm() ? "一" : "二")+"学期 征订教材计划单");
 
                 sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
                 sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 3));
                 XSSFRow row1 = sheet.createRow(1);
+                Date date=new Date();
+                SimpleDateFormat dateFormatYear=new SimpleDateFormat("YYYY");
+                SimpleDateFormat dateFormatMonth=new SimpleDateFormat("MM");
+                SimpleDateFormat dateFormatDay=new SimpleDateFormat("dd");
                 row1.createCell(0, CellType.STRING).setCellValue(department.getName() + "   院/系/部");
-                row1.createCell(2, CellType.STRING).setCellValue("填表时间：    年    月   日");
+                row1.createCell(2, CellType.STRING).setCellValue("填表时间：    "+dateFormatYear.format(date)+"年    "+dateFormatMonth.format(date)+"月   "+dateFormatDay.format(date)+"日");
 
                 sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 3));
                 sheet.createRow(2);

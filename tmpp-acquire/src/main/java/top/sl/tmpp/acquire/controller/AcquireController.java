@@ -85,7 +85,15 @@ public class AcquireController {
                                   LoginUser loginUser) {
         return RestModel.ok(acquireService.getAllExecutePlan(page, size));
     }
-
+    /**
+     * 获取所有计划列表
+     *
+     * @return ResponseEntity
+     */
+    @GetMapping("/execute_AllPlan")
+    public ResponseEntity<?> plan(LoginUser loginUser) {
+        return RestModel.ok(acquireService.getAllExecutePlan());
+    }
     /**
      * 获取所有教育层次
      *

@@ -65,6 +65,11 @@ public class AcquireServiceImpl implements AcquireService {
     }
 
     @Override
+    public List<ExecutePlanDTO> getAllExecutePlan() {
+        return executePlanMapper.selectAll();
+    }
+
+    @Override
     public List<Level> getAllLevel() {
         List<Level> levels = levelMapper.selectAll();
         logger.debug("查询所有层次");

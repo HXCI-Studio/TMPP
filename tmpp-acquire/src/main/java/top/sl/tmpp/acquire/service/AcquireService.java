@@ -44,6 +44,13 @@ public interface AcquireService {
     PageInfo<ExecutePlanDTO> getAllExecutePlan(int page, int size);
 
     /**
+     * 执行计划
+     *
+     * @return 执行计划集合
+     */
+    List<ExecutePlanDTO> getAllExecutePlan();
+
+    /**
      * 获取所有层次
      *
      * @return 所有层次集合
