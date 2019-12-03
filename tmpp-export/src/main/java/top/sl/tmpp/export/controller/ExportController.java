@@ -3,6 +3,7 @@ package top.sl.tmpp.export.controller;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import top.sl.tmpp.common.entity.LoginUser;
@@ -10,7 +11,6 @@ import top.sl.tmpp.common.exception.EmptyParameterException;
 import top.sl.tmpp.export.service.ExportService;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
@@ -45,8 +45,7 @@ public class ExportController {
     @GetMapping("/download_execute_plan_template")
     public void downloadExecutePlanTemplate(LoginUser loginUser, HttpServletResponse response) throws IOException {
         setDownloadExcelHeader(response, "执行计划模板.xlsx");
-        String file = this.getClass().getResource("/").getFile() + "execute_plan_template.xlsx";
-        FileUtils.copyFile(new File(file), response.getOutputStream());
+        FileUtils.copyFile(ResourceUtils.getFile("classpath:execute_plan_template.xlsx"), response.getOutputStream());
     }
 
     /**
@@ -161,7 +160,6 @@ public class ExportController {
         setDownloadExcelHeader(response, "班级领取教材反馈表.xlsx");
         exportService.studentClassBookTable(executePlanId, response.getOutputStream());
     }
-
 
 
 }
