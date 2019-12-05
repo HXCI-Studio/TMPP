@@ -83,7 +83,10 @@ public class ExportServiceImpl implements ExportService {
                             ("0".equals(exportMapper.selectTerm(executePlanId)) ? "一" : "二") + "学期班级领取教材发书单");
                     row = sheet.createRow(1);
                     information(strs, row, 0);
-
+                    //码洋
+                    int yoma=0;
+                    //实洋
+                    int realOcean=0;
                     for (int r = 0; r < t.getT2().size(); r++) {
                         XSSFRow xssfRow = sheet.createRow(r + 2);
                         xssfRow.createCell(0).setCellValue(r + 1);
@@ -100,7 +103,14 @@ public class ExportServiceImpl implements ExportService {
                         xssfRow.createCell(8).setCellValue(book.getDiscounts().toString());
                         xssfRow.createCell(9).setCellValue(s.doubleValue());
                         xssfRow.createCell(10).setCellValue(s.multiply(book.getDiscounts()).doubleValue());
+
+                        yoma+=s.doubleValue();
+                        realOcean+=s.multiply(book.getDiscounts()).doubleValue();
                     }
+                    XSSFRow row1 = sheet.createRow(t.getT2().size() + 2);
+                    row1.createCell(8,CellType.STRING).setCellValue("总计");
+                    row1.createCell(9,CellType.NUMERIC).setCellValue(yoma);
+                    row1.createCell(10,CellType.NUMERIC).setCellValue(realOcean);
                 });
         wb.write(outputStream);
     }
@@ -216,6 +226,17 @@ public class ExportServiceImpl implements ExportService {
         row = sheet.createRow(1);
         information(headerStrArray, row, 0);
         getSheetByList(subscriptionBookPlans, sheet);
+        for (int i=0;i<subscriptionBookPlans.size();i++){
+            SubscriptionBookPlan subscriptionBookPlan = subscriptionBookPlans.get(i);
+            String textBookCategory = subscriptionBookPlan.getTextBookCategory();
+            if (textBookCategory!=null){
+                XSSFRow row1 = sheet.getRow(i + 2);
+                row1.createCell(5,CellType.STRING).setCellValue(
+                        "0".equals(textBookCategory) ?"出版":"自编"
+                );
+            }
+
+        }
         wb.write(outputStream);
     }
 

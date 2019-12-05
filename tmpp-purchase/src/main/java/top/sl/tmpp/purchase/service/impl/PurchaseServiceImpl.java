@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import top.sl.tmpp.common.entity.*;
 import top.sl.tmpp.common.exception.EmptyParameterException;
 import top.sl.tmpp.common.exception.IllegalParameterException;
+import top.sl.tmpp.common.exception.NoBuyBookException;
 import top.sl.tmpp.common.mapper.*;
 import top.sl.tmpp.common.pojo.BookDTO;
 import top.sl.tmpp.common.util.ObjectUtils;
@@ -165,28 +166,32 @@ public class PurchaseServiceImpl implements PurchaseService {
         Department department = departmentMapper.selectByPrimaryKey(executePlanMapper.selectByPrimaryKey(executePlanId).getDepartmentId());
         ExecutePlan executePlan = executePlanMapper.selectByPrimaryKey(executePlanId);
 
-        int k=1;
+        int k = 1;
+        //执行次数
+        int numberOfExecutions = 0;
+
         for (int i = 0; i < bookDTOS.size(); i++) {
 
             BookDTO bookDTO = bookDTOS.get(i);
             if (bookDTO.getReason() == null) {
+                ++numberOfExecutions;
                 //征订教材计划单
-                XSSFSheet sheet = wb.createSheet("征订教材汇总表"+(k++));
+                XSSFSheet sheet = wb.createSheet("征订教材汇总表" + (k++));
                 sheet.setVerticallyCenter(true);
                 sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 3));
                 XSSFRow row0 = sheet.createRow(0);
                 XSSFCell cell = getCellWithStyle(wb, row0);
-                cell.setCellValue(executePlan.getYear()+"学年第"+(executePlan.getTerm() ? "一" : "二")+"学期 征订教材计划单");
+                cell.setCellValue(executePlan.getYear() + "学年第" + (executePlan.getTerm() ? "一" : "二") + "学期 征订教材计划单");
 
                 sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
                 sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 3));
                 XSSFRow row1 = sheet.createRow(1);
-                Date date=new Date();
-                SimpleDateFormat dateFormatYear=new SimpleDateFormat("YYYY");
-                SimpleDateFormat dateFormatMonth=new SimpleDateFormat("MM");
-                SimpleDateFormat dateFormatDay=new SimpleDateFormat("dd");
+                Date date = new Date();
+                SimpleDateFormat dateFormatYear = new SimpleDateFormat("YYYY");
+                SimpleDateFormat dateFormatMonth = new SimpleDateFormat("MM");
+                SimpleDateFormat dateFormatDay = new SimpleDateFormat("dd");
                 row1.createCell(0, CellType.STRING).setCellValue(department.getName() + "   院/系/部");
-                row1.createCell(2, CellType.STRING).setCellValue("填表时间：    "+dateFormatYear.format(date)+"年    "+dateFormatMonth.format(date)+"月   "+dateFormatDay.format(date)+"日");
+                row1.createCell(2, CellType.STRING).setCellValue("填表时间：    " + dateFormatYear.format(date) + "年    " + dateFormatMonth.format(date) + "月   " + dateFormatDay.format(date) + "日");
 
                 sheet.addMergedRegion(new CellRangeAddress(2, 2, 0, 3));
                 sheet.createRow(2);
@@ -247,64 +252,68 @@ public class PurchaseServiceImpl implements PurchaseService {
                 String courseCode = bookDTO.getCourseCode();
 
                 List<Plan> plans = planMapper.selectByExecutePlanIdAndCourseCode(executePlanId, courseCode);
-                int s=plans.size();
-                int sum=0;
+                int s = plans.size();
+                int sum = 0;
                 for (int j = 0; j < s; j++) {
                     XSSFRow row12 = sheet.createRow(12 + j);
                     getCellWithStyle(wb, row12);
                     row12.createCell(0, CellType.STRING).setCellValue(plans.get(j).getStartPro());
                     row12.createCell(1, CellType.STRING).setCellValue(plans.get(j).getClazz());
                     row12.createCell(2, CellType.STRING).setCellValue(plans.get(j).getClazzNumber());
-                    sum=sum+plans.get(j).getClazzNumber();
+                    sum = sum + plans.get(j).getClazzNumber();
                 }
 
-                int star=12 + s;
+                int star = 12 + s;
                 XSSFRow row = sheet.createRow(star++);
-                row.createCell(0,CellType.STRING).setCellValue("学生教材合计");
-                row.createCell(1,CellType.STRING).setCellValue(sum+"册");
-                row.createCell(2,CellType.STRING).setCellValue("教材总计");
-                row.createCell(3,CellType.STRING).setCellValue((sum+bookDTO.getTeacherBookNumber())+"册");
+                row.createCell(0, CellType.STRING).setCellValue("学生教材合计");
+                row.createCell(1, CellType.STRING).setCellValue(sum + "册");
+                row.createCell(2, CellType.STRING).setCellValue("教材总计");
+                row.createCell(3, CellType.STRING).setCellValue((sum + bookDTO.getTeacherBookNumber()) + "册");
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row2 = sheet.createRow(star++);
 
-                sheet.addMergedRegion(new CellRangeAddress(star, star+1, 0, 0));
+                sheet.addMergedRegion(new CellRangeAddress(star, star + 1, 0, 0));
                 sheet.addMergedRegion(new CellRangeAddress(star, ++star, 1, 3));
-                XSSFRow row10 = sheet.createRow(star++-1);
-                row10.createCell(0,CellType.STRING).setCellValue("专业主任意见：");
-                row10.createCell(1,CellType.STRING).setCellValue("                           签字：           年    月   日        ");
+                XSSFRow row10 = sheet.createRow(star++ - 1);
+                row10.createCell(0, CellType.STRING).setCellValue("专业主任意见：");
+                row10.createCell(1, CellType.STRING).setCellValue("                           签字：           年    月   日        ");
 
-                sheet.addMergedRegion(new CellRangeAddress(star, star+1, 0, 0));
+                sheet.addMergedRegion(new CellRangeAddress(star, star + 1, 0, 0));
                 sheet.addMergedRegion(new CellRangeAddress(star, ++star, 1, 3));
-                XSSFRow row12 = sheet.createRow(star++-1);
-                row12.createCell(0,CellType.STRING).setCellValue("院/系/部负责人意见");
-                row12.createCell(1,CellType.STRING).setCellValue("                           签字：           年    月   日        ");
+                XSSFRow row12 = sheet.createRow(star++ - 1);
+                row12.createCell(0, CellType.STRING).setCellValue("院/系/部负责人意见");
+                row12.createCell(1, CellType.STRING).setCellValue("                           签字：           年    月   日        ");
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row13 = sheet.createRow(star++);
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row14 = sheet.createRow(star++);
-                row14.createCell(0,CellType.STRING).setCellValue("备注：");
+                row14.createCell(0, CellType.STRING).setCellValue("备注：");
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row15 = sheet.createRow(star++);
-                row15.createCell(0,CellType.STRING).setCellValue("1、请在画\"□\"处打\"√\"确定所选内容。");
+                row15.createCell(0, CellType.STRING).setCellValue("1、请在画\"□\"处打\"√\"确定所选内容。");
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row16 = sheet.createRow(star++);
-                row16.createCell(0,CellType.STRING).setCellValue("2、《征订教材计划单》至少在教材使用日前30天提交院/系/部通过并汇总成《院系部征订教材计划统计表》。");
+                row16.createCell(0, CellType.STRING).setCellValue("2、《征订教材计划单》至少在教材使用日前30天提交院/系/部通过并汇总成《院系部征订教材计划统计表》。");
 
                 sheet.addMergedRegion(new CellRangeAddress(star, star, 0, 3));
                 XSSFRow row17 = sheet.createRow(star++);
-                row17.createCell(0,CellType.STRING).setCellValue("3、加盖院/系/部公章的《征订教材计划表》纸介和电子版，于教材使用前30天交教务处教材科一份。     ");
+                row17.createCell(0, CellType.STRING).setCellValue("3、加盖院/系/部公章的《征订教材计划表》纸介和电子版，于教材使用前30天交教务处教材科一份。     ");
 
             }
 
 
         }
+        if (numberOfExecutions > 0) {
+            wb.write(outputStream);
+        }else {
+            throw new NoBuyBookException("未订购书籍");
+        }
 
-        wb.write(outputStream);
 
     }
 
