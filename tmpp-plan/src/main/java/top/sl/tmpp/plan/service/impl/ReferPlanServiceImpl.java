@@ -60,37 +60,52 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             logger.debug("获取到newFile最后的行数->{}", sheet.getLastRowNum());
             ExecutePlan executePlan = new ExecutePlan();
             ExecutePlan eP = executePlanMapper.selectExecutePlan(year, term, teachingDepartment, educationalLevel);
-            if (eP != null) {
-                executePlan = eP;
-                //创建新文件
-                String oldFileName = departmentMapper.selectByPrimaryKey(teachingDepartment).getName()
-                        + "."
-                        + executePlan.getFileType();
-                File oldFile = new File(oldFileName);
-                try (FileOutputStream fileOutputStream = new FileOutputStream(oldFile)) {
-                    fileOutputStream.write(executePlan.getFile());
-                } catch (IOException e) {
-                    e.printStackTrace();
+            if (eP!=null){
+                int numberOfSheets = workbook.getNumberOfSheets();
+                for (int i=0;i<numberOfSheets;i++){
+                    Sheet sheet = workbook.getSheetAt(i);
+                    executePlan = eP;
+                    //创建新文件
+                    String oldFileName = departmentMapper.selectByPrimaryKey(teachingDepartment).getName()
+                            + "."
+                            + executePlan.getFileType();
+                    File oldFile = new File(oldFileName);
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(oldFile)) {
+                        fileOutputStream.write(executePlan.getFile());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Workbook newWorkbook = null;
+                    try (FileInputStream fileInputStream1 = new FileInputStream(oldFile)) {
+                        Workbook workbook1 = FileUtil.getWorkbook(fileInputStream1, oldFileName);
+                        Sheet sheet1 = workbook1.getSheetAt(0);
+                        newWorkbook = mergeFile(sheet, sheet1, workbook1);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    new File(fileName).delete();
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
+                        assert newWorkbook != null;
+                        newWorkbook.write(fileOutputStream);
+                        executePlan.setFile(FileUtils.readFileToByteArray(new File(fileName)));
+                        executePlanMapper.updateByPrimaryKeyWithBLOBs(executePlan);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    oldFile.delete();
+                    AddPlan(executePlan, sheet);
                 }
-                Workbook newWorkbook = null;
-                try (FileInputStream fileInputStream1 = new FileInputStream(oldFile)) {
-                    Workbook workbook1 = FileUtil.getWorkbook(fileInputStream1, oldFileName);
-                    Sheet sheet1 = workbook1.getSheetAt(0);
-                    newWorkbook = mergeFile(sheet, sheet1, workbook1);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            }else {
+                int numberOfSheets = workbook.getNumberOfSheets();
+                Sheet sheet = workbook.getSheetAt(0);
+                FileOutputStream fileOutputStream = new FileOutputStream(file);
+                for (int i=1;i<numberOfSheets;i++){
+                    mergeFile(workbook.getSheetAt(i), sheet, workbook);
+                    workbook.removeSheetAt(i);
+                    workbook.write(fileOutputStream);
                 }
-                new File(fileName).delete();
-                try (FileOutputStream fileOutputStream = new FileOutputStream(fileName)) {
-                    assert newWorkbook != null;
-                    newWorkbook.write(fileOutputStream);
-                    executePlan.setFile(FileUtils.readFileToByteArray(new File(fileName)));
-                    executePlanMapper.updateByPrimaryKeyWithBLOBs(executePlan);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                oldFile.delete();
-            } else {
+                fileOutputStream.close();
+
                 String newExecutePlanId = UUID.randomUUID().toString().replace("-", "");
                 executePlan.setId(newExecutePlanId);
                 executePlan.setYear(year);
@@ -107,52 +122,59 @@ public class ReferPlanServiceImpl implements ReferPlanService {
                 executePlanMapper.insert(executePlan);
             }
 
-            List<Plan> planList = new ArrayList<>(sheet.getLastRowNum());
-            for (int rowIndex = 3; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
-                logger.debug("开始获取第{}行", rowIndex);
-                Row row = sheet.getRow(rowIndex);
-                String collegeName = getCellValue(row, 1);
-                String startPro = getCellValue(row, 2);
-                String courseCode = getCellValue(row, 3);
-                String courseName = getCellValue(row, 4);
-                String type = getCellValue(row, 5);
-                String clazz = getCellValue(row, 6);
-                String clazzNumber = getCellValue(row, 7);
-                String teacher = getCellValue(row, 8);
-                String remark = getCellValue(row, 9);
-                //检查关键字段不为空
-                checkCellNoneBlank(rowIndex, collegeName, startPro, courseCode, courseName, type, clazz, clazzNumber, teacher);
-                final int tempRowIndex = rowIndex;
-                //学院ID
-                String collegeId = checkNotNull(collegesMapper.selectIdByName(collegeName), () -> new ExcelReadException(tempRowIndex + 1, 2, "学院不存在"));
-                //人数
-                int clazzNum = ObjectUtils.toInt(clazzNumber, () -> new ExcelReadException(tempRowIndex + 1, 8, "人数错误"));
-                //检查课程代码
-                checkCourseCode(courseCode, courseName, tempRowIndex + 1, 4);
+                AddPlan(executePlan, sheet);
 
-                Plan plan = new Plan();
-                plan.setId(UUID.randomUUID().toString().replace("-", ""));
-                plan.setCollegesId(collegeId);
-                plan.setStartPro(startPro);
-                plan.setCourseCode(courseCode);
-                plan.setCourseName(courseName);
-                plan.setType(false);
-                plan.setClazz(clazz);
-                plan.setClazzNumber(clazzNum);
-                plan.setTeacher(teacher);
-                plan.setRemark(remark);
-                plan.setExecutePlanId(executePlan.getId());
-                Date date = new Date();
-                plan.setGmtCreate(date);
-                plan.setGmtModified(date);
-                planList.add(plan);
             }
-            planList.forEach(planMapper::insert);
+
         } catch (FileNotFoundException e) {
             throw new FileException("文件丢失，请重新上传", HttpStatus.NOT_FOUND);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void AddPlan(ExecutePlan executePlan, Sheet sheet) {
+        List<Plan> planList = new ArrayList<>(sheet.getLastRowNum());
+        for (int rowIndex = 3; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+            logger.debug("开始获取第{}行", rowIndex);
+            Row row = sheet.getRow(rowIndex);
+            String collegeName = getCellValue(row, 1);
+            String startPro = getCellValue(row, 2);
+            String courseCode = getCellValue(row, 3);
+            String courseName = getCellValue(row, 4);
+            String type = getCellValue(row, 5);
+            String clazz = getCellValue(row, 6);
+            String clazzNumber = getCellValue(row, 7);
+            String teacher = getCellValue(row, 8);
+            String remark = getCellValue(row, 9);
+            //检查关键字段不为空
+            checkCellNoneBlank(rowIndex, collegeName, startPro, courseCode, courseName, type, clazz, clazzNumber, teacher);
+            final int tempRowIndex = rowIndex;
+            //学院ID
+            String collegeId = checkNotNull(collegesMapper.selectIdByName(collegeName), () -> new ExcelReadException(tempRowIndex + 1, 2, "学院不存在"));
+            //人数
+            int clazzNum = ObjectUtils.toInt(clazzNumber, () -> new ExcelReadException(tempRowIndex + 1, 8, "人数错误"));
+            //检查课程代码
+            checkCourseCode(courseCode, courseName, tempRowIndex + 1, 4);
+
+            Plan plan = new Plan();
+            plan.setId(UUID.randomUUID().toString().replace("-", ""));
+            plan.setCollegesId(collegeId);
+            plan.setStartPro(startPro);
+            plan.setCourseCode(courseCode);
+            plan.setCourseName(courseName);
+            plan.setType(false);
+            plan.setClazz(clazz);
+            plan.setClazzNumber(clazzNum);
+            plan.setTeacher(teacher);
+            plan.setRemark(remark);
+            plan.setExecutePlanId(executePlan.getId());
+            Date date = new Date();
+            plan.setGmtCreate(date);
+            plan.setGmtModified(date);
+            planList.add(plan);
+        }
+        planList.forEach(planMapper::insert);
     }
 
     @Override
