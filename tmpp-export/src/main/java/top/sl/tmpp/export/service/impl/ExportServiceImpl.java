@@ -46,7 +46,7 @@ public class ExportServiceImpl implements ExportService {
         XSSFSheet sheet = wb.createSheet("导出采购教材汇总表");
 
         XSSFRow row = sheet.createRow(0);
-        final String[] headerStrArray = {"序号", "教材名称", "出版社", "作者", "书号isbn", "单价", "学生用书", "教师用书", "教务处用书", "购书总数"};
+        final String[] headerStrArray = {"序号", "教材名称", "出版社", "作者", "书号isbn", "单价", "学生用书", "教师用书", "教务处用书","开课院系部","开课专业","购书总数"};
 
         mergeCells(sheet, headerStrArray.length - 1);
 

@@ -11,6 +11,8 @@
             <arg column="clazz_number" javaType="java.lang.Integer" jdbcType="INTEGER"/>
             <arg column="teacher_book_number" javaType="java.lang.Integer" jdbcType="INTEGER"/>
             <arg column="is_buy_book" javaType="java.lang.Byte" jdbcType="BIT"/>
+            <arg column="department_name" javaType="java.lang.String" jdbcType="VARCHAR"/>
+            <arg column="start_pro" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="total" javaType="java.lang.Integer" jdbcType="INTEGER"/>
         </constructor>
     </resultMap>
@@ -94,20 +96,25 @@
     </resultMap>
     <select id="getPurchasingMaterials" resultMap="PurchasingMaterialsMap">
         SELECT text_book_name,
-               press,
-               author,
-               isbn,
-               unit_price,
-               SUM(clazz_number)                                                    AS clazz_number,
-               teacher_book_number,
-               is_buy_book,
-               SUM(plan.clazz_number) + book.teacher_book_number + book.is_buy_book AS total
+        press,
+        author,
+        isbn,
+        unit_price,
+        SUM(clazz_number)                                                    AS clazz_number,
+        teacher_book_number,
+        is_buy_book,
+        department.`name` AS department_name,
+        start_pro,
+        SUM(plan.clazz_number) + book.teacher_book_number + book.is_buy_book AS total
         FROM book
-                 INNER JOIN plan_book ON plan_book.book_id = book.id
-                 INNER JOIN plan ON plan_book.plan_id = plan.id
+        INNER JOIN plan_book ON plan_book.book_id = book.id
+        INNER JOIN plan ON plan_book.plan_id = plan.id
+        INNER JOIN colleges ON plan.colleges_id=colleges.id
+        INNER JOIN execute_plan ON plan.execute_plan_id=execute_plan.id
+        INNER JOIN department ON execute_plan.department_id=department.id
         WHERE plan.execute_plan_id = #{executePlanId,jdbcType=VARCHAR}
-          AND book.is_book_purchase = true
-        GROUP BY isbn
+        AND book.is_book_purchase = true
+        GROUP BY isbn,department.`name`,start_pro
     </select>
     <select id="selectYear" resultType="java.lang.String">
         select year

@@ -56,8 +56,6 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             if (workbook.getNumberOfSheets() < 1) {
                 throw new FileException("工作簿数量错误：" + workbook.getNumberOfSheets(), HttpStatus.BAD_REQUEST);
             }
-            Sheet sheet = workbook.getSheetAt(0);
-            logger.debug("获取到newFile最后的行数->{}", sheet.getLastRowNum());
             ExecutePlan executePlan = new ExecutePlan();
             ExecutePlan eP = executePlanMapper.selectExecutePlan(year, term, teachingDepartment, educationalLevel);
             if (eP!=null){
@@ -120,7 +118,6 @@ public class ReferPlanServiceImpl implements ReferPlanService {
                 executePlan.setGmtCreate(d);
                 executePlan.setFile(FileUtils.readFileToByteArray(file));
                 executePlanMapper.insert(executePlan);
-            }
 
                 AddPlan(executePlan, sheet);
 
@@ -308,7 +305,7 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             //往oldFile里写newFile里的内容
             logger.debug("开始获取oldfile第{}行", lastRowNum);
             Row row1 = sheet.createRow(++lastRowNum);
-            row1.createCell(0,CellType.NUMERIC).setCellValue(lastRowNum-3);
+            row1.createCell(0,CellType.NUMERIC).setCellValue(lastRowNum-2);
             row1.createCell(1, CellType.STRING).setCellValue(collegeName);
             row1.createCell(2, CellType.STRING).setCellValue(startPro);
             row1.createCell(3, CellType.STRING).setCellValue(courseCode);
