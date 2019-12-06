@@ -96,14 +96,15 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             }else {
                 int numberOfSheets = workbook.getNumberOfSheets();
                 Sheet sheet = workbook.getSheetAt(0);
-                FileOutputStream fileOutputStream = new FileOutputStream(file);
-                for (int i=1;i<numberOfSheets;i++){
-                    mergeFile(workbook.getSheetAt(i), sheet, workbook);
-                    workbook.removeSheetAt(i);
-                    workbook.write(fileOutputStream);
+                if (numberOfSheets>1){
+                    FileOutputStream fileOutputStream = new FileOutputStream(file);
+                    for (int i=1;i<numberOfSheets;i++){
+                        mergeFile(workbook.getSheetAt(i), sheet, workbook);
+                        workbook.removeSheetAt(i);
+                        workbook.write(fileOutputStream);
+                    }
+                    fileOutputStream.close();
                 }
-                fileOutputStream.close();
-
                 String newExecutePlanId = UUID.randomUUID().toString().replace("-", "");
                 executePlan.setId(newExecutePlanId);
                 executePlan.setYear(year);
