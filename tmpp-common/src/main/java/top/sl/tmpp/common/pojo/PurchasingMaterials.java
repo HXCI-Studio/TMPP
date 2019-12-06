@@ -41,6 +41,17 @@ public class PurchasingMaterials {
      * 教务处是否购书
      */
     private Byte isBuyBook;
+
+    /**
+     * 开课院系部
+     */
+    private String department_name;
+
+    /**
+     * 开课专业
+     */
+    private String start_pro;
+
     /**
      * 购书总数
      */
@@ -49,7 +60,7 @@ public class PurchasingMaterials {
     public PurchasingMaterials() {
     }
 
-    public PurchasingMaterials(String textBookName, String press, String author, String isbn, BigDecimal unitPrice, Integer clazzNumber, Integer teacherBookNumber, Byte isBuyBook, Integer total) {
+    public PurchasingMaterials(String textBookName, String press, String author, String isbn, BigDecimal unitPrice, Integer clazzNumber, Integer teacherBookNumber, Byte isBuyBook, String department_name, String start_pro, Integer total) {
         this.textBookName = textBookName;
         this.press = press;
         this.author = author;
@@ -59,6 +70,8 @@ public class PurchasingMaterials {
         this.teacherBookNumber = teacherBookNumber;
         this.isBuyBook = isBuyBook;
         this.total = total;
+        this.department_name = department_name;
+        this.start_pro = start_pro;
     }
 
     public String getTextBookName() {
@@ -117,12 +130,12 @@ public class PurchasingMaterials {
         this.teacherBookNumber = teacherBookNumber;
     }
 
-    public Byte getBuyBook() {
+    public Byte getIsBuyBook() {
         return isBuyBook;
     }
 
-    public void setBuyBook(Byte buyBook) {
-        isBuyBook = buyBook;
+    public void setIsBuyBook(Byte isBuyBook) {
+        this.isBuyBook = isBuyBook;
     }
 
     public Integer getTotal() {
@@ -131,5 +144,21 @@ public class PurchasingMaterials {
 
     public void setTotal(Integer total) {
         this.total = total;
+    }
+
+    public String getDepartment_name() {
+        return department_name;
+    }
+
+    public void setDepartment_name(String department_name) {
+        this.department_name = department_name;
+    }
+
+    public String getStart_pro() {
+        return start_pro;
+    }
+
+    public void setStart_pro(String start_pro) {
+        this.start_pro = start_pro;
     }
 }
