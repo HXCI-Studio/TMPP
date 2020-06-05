@@ -299,7 +299,7 @@ public class ExportServiceImpl implements ExportService {
 
     @Override
     public void downBookMaterials(String year, String college, String teachingDepartment, Boolean term, OutputStream outputStream) throws IOException {
-        final String[] headerStrArray = {"序号", "授课部门", "开课院系", "专业", "课程代码", "课程名称", "教材名称"
+        final String[] headerStrArray = {"序号", "授课单位", "开课院系", "专业", "课程代码", "课程名称", "教材名称"
                 , "书籍ISBN", "教材类别", "出版社", "作者", "单价", "获奖信息及丛书名称",
                 "出版日期", "使用年级", "使用班级", "班级人数", "教师征订数量", "教务处样书数量",
                 "征订人", "联系电话", "审核状态", "是否征订教材", "未预定原因", "备注",};

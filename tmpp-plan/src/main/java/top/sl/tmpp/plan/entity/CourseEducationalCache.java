@@ -31,7 +31,7 @@ public class CourseEducationalCache {
     }
 
     public static void refreshCourseMap() {
-        ResponseEntity<CourseEducational> responseEntity = restTemplate.getForEntity("http://www.greathiit.com/api/getCourseEducational", CourseEducational.class);
+        ResponseEntity<CourseEducational> responseEntity = restTemplate.getForEntity("http://data.greathiit.com/api/getCourseEducational", CourseEducational.class);
         CourseEducational body = responseEntity.getBody();
         if (body == null || body.getResult() == null) {
             throw new ApiException("API获取课程信息失败");

@@ -109,7 +109,6 @@ public class ReferPlanServiceImpl implements ReferPlanService {
                 executePlan.setId(newExecutePlanId);
                 executePlan.setYear(year);
                 executePlan.setTerm(term);
-                executePlan.setGrade(ObjectUtils.toInt(getCellValue(sheet.getRow(1), 1), () -> new ExcelReadException(1, 1)));
                 executePlan.setStatus(false);
                 executePlan.setFileType(fileId.substring(fileId.indexOf(".") + 1));
                 executePlan.setLevelId(educationalLevel);
@@ -133,7 +132,7 @@ public class ReferPlanServiceImpl implements ReferPlanService {
 
     private void AddPlan(ExecutePlan executePlan, Sheet sheet) {
         List<Plan> planList = new ArrayList<>(sheet.getLastRowNum());
-        for (int rowIndex = 3; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        for (int rowIndex = 2; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             logger.debug("开始获取第{}行", rowIndex);
             Row row = sheet.getRow(rowIndex);
             String collegeName = getCellValue(row, 1);
@@ -142,18 +141,19 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             String courseName = getCellValue(row, 4);
             String type = getCellValue(row, 5);
             String clazz = getCellValue(row, 6);
-            String clazzNumber = getCellValue(row, 7);
-            String teacher = getCellValue(row, 8);
-            String remark = getCellValue(row, 9);
+            String grade = getCellValue(row, 7);
+            String clazzNumber = getCellValue(row, 8);
+            String teacher = getCellValue(row, 9);
+            String remark = getCellValue(row, 10);
             //检查关键字段不为空
             checkCellNoneBlank(rowIndex, collegeName, startPro, courseCode, courseName, type, clazz, clazzNumber, teacher);
             final int tempRowIndex = rowIndex;
             //学院ID
             String collegeId = checkNotNull(collegesMapper.selectIdByName(collegeName), () -> new ExcelReadException(tempRowIndex + 1, 2, "学院不存在"));
             //人数
-            int clazzNum = ObjectUtils.toInt(clazzNumber, () -> new ExcelReadException(tempRowIndex + 1, 8, "人数错误"));
+            int clazzNum = ObjectUtils.toInt(clazzNumber, () -> new ExcelReadException(tempRowIndex + 1, 9, "人数错误"));
             //检查课程代码
-            checkCourseCode(courseCode, courseName, tempRowIndex + 1, 4);
+            //checkCourseCode(courseCode, courseName, tempRowIndex + 1, 4);
 
             Plan plan = new Plan();
             plan.setId(UUID.randomUUID().toString().replace("-", ""));
@@ -164,6 +164,7 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             plan.setType(false);
             plan.setClazz(clazz);
             plan.setClazzNumber(clazzNum);
+            plan.setGrade(grade);
             plan.setTeacher(teacher);
             plan.setRemark(remark);
             plan.setExecutePlanId(executePlan.getId());

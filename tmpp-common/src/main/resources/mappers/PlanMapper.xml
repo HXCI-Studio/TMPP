@@ -11,6 +11,7 @@
             <arg column="type" javaType="java.lang.Boolean" jdbcType="BIT"/>
             <arg column="clazz" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="clazz_number" javaType="java.lang.Integer" jdbcType="INTEGER"/>
+            <arg column="grade" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="teacher" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="remark" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="execute_plan_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
@@ -33,6 +34,7 @@
             type,
             clazz,
             clazz_number,
+            grade,
             teacher,
             remark,
             execute_plan_id,
@@ -53,12 +55,12 @@
     <insert id="insert" parameterType="top.sl.tmpp.common.entity.Plan">
         insert into plan (id, colleges_id, course_code,
                           course_name, start_pro, type,
-                          clazz, clazz_number, teacher,
+                          clazz, clazz_number,grade, teacher,
                           remark, execute_plan_id, gmt_create,
                           gmt_modified)
         values (#{id,jdbcType=VARCHAR}, #{collegesId,jdbcType=VARCHAR}, #{courseCode,jdbcType=VARCHAR},
                 #{courseName,jdbcType=VARCHAR}, #{startPro,jdbcType=VARCHAR}, #{type,jdbcType=BIT},
-                #{clazz,jdbcType=VARCHAR}, #{clazzNumber,jdbcType=INTEGER}, #{teacher,jdbcType=VARCHAR},
+                #{clazz,jdbcType=VARCHAR}, #{clazzNumber,jdbcType=INTEGER}, #{grade,jdbcType=VARCHAR}, #{teacher,jdbcType=VARCHAR},
                 #{remark,jdbcType=VARCHAR}, #{executePlanId,jdbcType=VARCHAR}, #{gmtCreate,jdbcType=TIMESTAMP},
                 #{gmtModified,jdbcType=TIMESTAMP})
     </insert>
@@ -88,6 +90,9 @@
             </if>
             <if test="clazzNumber != null">
                 clazz_number,
+            </if>
+            <if test="grade != null">
+                grade,
             </if>
             <if test="teacher != null">
                 teacher,
@@ -130,6 +135,9 @@
             <if test="clazzNumber != null">
                 #{clazzNumber,jdbcType=INTEGER},
             </if>
+            <if test="grade != null">
+                #{grade,jdbcType=VARCHAR},
+            </if>
             <if test="teacher != null">
                 #{teacher,jdbcType=VARCHAR},
             </if>
@@ -171,6 +179,9 @@
             <if test="clazzNumber != null">
                 clazz_number = #{clazzNumber,jdbcType=INTEGER},
             </if>
+            <if test="grade != null">
+                grade = #{teacher,jdbcType=VARCHAR},
+            </if>
             <if test="teacher != null">
                 teacher = #{teacher,jdbcType=VARCHAR},
             </if>
@@ -198,6 +209,7 @@
             type            = #{type,jdbcType=BIT},
             clazz           = #{clazz,jdbcType=VARCHAR},
             clazz_number    = #{clazzNumber,jdbcType=INTEGER},
+            grade         = #{grade,jdbcType=VARCHAR},
             teacher         = #{teacher,jdbcType=VARCHAR},
             remark          = #{remark,jdbcType=VARCHAR},
             execute_plan_id = #{executePlanId,jdbcType=VARCHAR},

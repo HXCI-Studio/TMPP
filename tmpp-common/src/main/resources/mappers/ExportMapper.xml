@@ -312,7 +312,7 @@
         book.unit_price AS unitPrice,
         book.award_Information AS awardInformation,
         book.publication_date AS publicationDate,
-        execute_plan.grade AS grade,
+        plan.grade AS grade,
         plan.clazz AS clazz,
         plan.clazz_number AS clazzNumber,
         book.teacher_book_number AS teacherBookNumber,

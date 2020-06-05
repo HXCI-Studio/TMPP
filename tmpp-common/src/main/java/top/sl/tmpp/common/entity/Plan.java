@@ -19,6 +19,8 @@ public class Plan {
 
     private Integer clazzNumber;
 
+    private String grade;
+
     private String teacher;
 
     private String remark;
@@ -29,7 +31,7 @@ public class Plan {
 
     private Date gmtModified;
 
-    public Plan(String id, String collegesId, String courseCode, String courseName, String startPro, Boolean type, String clazz, Integer clazzNumber, String teacher, String remark, String executePlanId, Date gmtCreate, Date gmtModified) {
+    public Plan(String id, String collegesId, String courseCode, String courseName, String startPro, Boolean type, String clazz, Integer clazzNumber, String grade, String teacher, String remark, String executePlanId, Date gmtCreate, Date gmtModified) {
         this.id = id;
         this.collegesId = collegesId;
         this.courseCode = courseCode;
@@ -41,8 +43,17 @@ public class Plan {
         this.teacher = teacher;
         this.remark = remark;
         this.executePlanId = executePlanId;
+        this.grade = grade;
         this.gmtCreate = gmtCreate;
         this.gmtModified = gmtModified;
+    }
+
+    public String getGrade() {
+        return grade;
+    }
+
+    public void setGrade(String grade) {
+        this.grade = grade;
     }
 
     public Plan() {

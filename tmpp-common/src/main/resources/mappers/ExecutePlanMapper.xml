@@ -6,7 +6,6 @@
             <idArg column="id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="year" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="term" javaType="java.lang.Boolean" jdbcType="BIT"/>
-            <arg column="grade" javaType="java.lang.Integer" jdbcType="INTEGER"/>
             <arg column="status" javaType="java.lang.Boolean" jdbcType="BIT"/>
             <arg column="file_type" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="level_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
@@ -20,7 +19,6 @@
             <idArg column="id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="year" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="term" javaType="java.lang.Boolean" jdbcType="BIT"/>
-            <arg column="grade" javaType="java.lang.Integer" jdbcType="INTEGER"/>
             <arg column="status" javaType="java.lang.Boolean" jdbcType="BIT"/>
             <arg column="file_type" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="level_id" javaType="java.lang.String" jdbcType="VARCHAR"/>
@@ -41,7 +39,6 @@
             <idArg column="id" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="year" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="term" javaType="java.lang.Boolean" jdbcType="BIT"/>
-            <arg column="grade" javaType="java.lang.Integer" jdbcType="INTEGER"/>
             <arg column="status" javaType="java.lang.Boolean" jdbcType="BIT"/>
             <arg column="level" javaType="java.lang.String" jdbcType="VARCHAR"/>
             <arg column="department" javaType="java.lang.String" jdbcType="VARCHAR"/>
@@ -53,7 +50,6 @@
             id,
             year,
             term,
-            grade,
             status,
             file_type,
             level_id,
@@ -78,11 +74,11 @@
         where id = #{id,jdbcType=VARCHAR}
     </delete>
     <insert id="insert" parameterType="top.sl.tmpp.common.entity.ExecutePlan">
-        insert into execute_plan (id, year, term, grade,
+        insert into execute_plan (id, year, term,
         status, file_type, level_id,
         department_id, gmt_modified, gmt_create,
         file)
-        values (#{id,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, #{term,jdbcType=BIT}, #{grade,jdbcType=INTEGER},
+        values (#{id,jdbcType=VARCHAR}, #{year,jdbcType=VARCHAR}, #{term,jdbcType=BIT},
         #{status,jdbcType=BIT}, #{fileType,jdbcType=VARCHAR}, #{levelId,jdbcType=VARCHAR},
         #{departmentId,jdbcType=VARCHAR}, #{gmtModified,jdbcType=TIMESTAMP}, #{gmtCreate,jdbcType=TIMESTAMP},
         #{file,jdbcType=LONGVARBINARY})
@@ -98,9 +94,6 @@
             </if>
             <if test="term != null">
                 term,
-            </if>
-            <if test="grade != null">
-                grade,
             </if>
             <if test="status != null">
                 status,
@@ -134,9 +127,6 @@
             <if test="term != null">
                 #{term,jdbcType=BIT},
             </if>
-            <if test="grade != null">
-                #{grade,jdbcType=INTEGER},
-            </if>
             <if test="status != null">
                 #{status,jdbcType=BIT},
             </if>
@@ -169,9 +159,6 @@
             <if test="term != null">
                 term = #{term,jdbcType=BIT},
             </if>
-            <if test="grade != null">
-                grade = #{grade,jdbcType=INTEGER},
-            </if>
             <if test="status != null">
                 status = #{status,jdbcType=BIT},
             </if>
@@ -200,7 +187,6 @@
         update execute_plan
         set year = #{year,jdbcType=VARCHAR},
         term = #{term,jdbcType=BIT},
-        grade = #{grade,jdbcType=INTEGER},
         status = #{status,jdbcType=BIT},
         file_type = #{fileType,jdbcType=VARCHAR},
         level_id = #{levelId,jdbcType=VARCHAR},
@@ -214,7 +200,6 @@
         update execute_plan
         set year = #{year,jdbcType=VARCHAR},
         term = #{term,jdbcType=BIT},
-        grade = #{grade,jdbcType=INTEGER},
         status = #{status,jdbcType=BIT},
         file_type = #{fileType,jdbcType=VARCHAR},
         level_id = #{levelId,jdbcType=VARCHAR},
@@ -227,7 +212,6 @@
         select execute_plan.id,
                execute_plan.year,
                execute_plan.term,
-               execute_plan.grade,
                execute_plan.status,
                level.educational_level as level,
                department.name         as department,
@@ -256,7 +240,6 @@
         select execute_plan.id,
         execute_plan.year,
         execute_plan.term,
-        execute_plan.grade,
         execute_plan.status,
         level.educational_level as level,
         department.name as department,
@@ -271,7 +254,6 @@
         select execute_plan.id,
         execute_plan.year,
         execute_plan.term,
-        execute_plan.grade,
         execute_plan.status,
         level.educational_level as level,
         department.name as department,

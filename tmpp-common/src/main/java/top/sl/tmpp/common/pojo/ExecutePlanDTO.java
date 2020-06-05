@@ -13,8 +13,6 @@ public class ExecutePlanDTO {
 
     private Boolean term;
 
-    private Integer grade;
-
     private Boolean status;
 
     private String level;
@@ -28,11 +26,10 @@ public class ExecutePlanDTO {
     public ExecutePlanDTO() {
     }
 
-    public ExecutePlanDTO(String id, String year, Boolean term, Integer grade, Boolean status, String level, String department, Date gmtModified, Date gmtCreate) {
+    public ExecutePlanDTO(String id, String year, Boolean term, Boolean status, String level, String department, Date gmtModified, Date gmtCreate) {
         this.id = id;
         this.year = year;
         this.term = term;
-        this.grade = grade;
         this.status = status;
         this.level = level;
         this.department = department;
@@ -64,13 +61,6 @@ public class ExecutePlanDTO {
         this.term = term;
     }
 
-    public Integer getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Integer grade) {
-        this.grade = grade;
-    }
 
     public Boolean getStatus() {
         return status;
@@ -118,7 +108,6 @@ public class ExecutePlanDTO {
                 "id='" + id + '\'' +
                 ", year='" + year + '\'' +
                 ", term=" + term +
-                ", grade=" + grade +
                 ", status=" + status +
                 ", level='" + level + '\'' +
                 ", department='" + department + '\'' +

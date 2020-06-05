@@ -9,8 +9,6 @@ public class ExecutePlan {
 
     private Boolean term;
 
-    private Integer grade;
-
     private Boolean status;
 
     private String fileType;
@@ -30,11 +28,10 @@ public class ExecutePlan {
         this.file = file;
     }
 
-    public ExecutePlan(String id, String year, Boolean term, Integer grade, Boolean status, String fileType, String levelId, String departmentId, Date gmtModified, Date gmtCreate) {
+    public ExecutePlan(String id, String year, Boolean term, Boolean status, String fileType, String levelId, String departmentId, Date gmtModified, Date gmtCreate) {
         this.id = id;
         this.year = year;
         this.term = term;
-        this.grade = grade;
         this.status = status;
         this.fileType = fileType;
         this.levelId = levelId;
@@ -43,11 +40,10 @@ public class ExecutePlan {
         this.gmtCreate = gmtCreate;
     }
 
-    public ExecutePlan(String id, String year, Boolean term, Integer grade, Boolean status, String fileType, String levelId, String departmentId, Date gmtModified, Date gmtCreate, byte[] file) {
+    public ExecutePlan(String id, String year, Boolean term, Boolean status, String fileType, String levelId, String departmentId, Date gmtModified, Date gmtCreate, byte[] file) {
         this.id = id;
         this.year = year;
         this.term = term;
-        this.grade = grade;
         this.status = status;
         this.fileType = fileType;
         this.levelId = levelId;
@@ -83,14 +79,6 @@ public class ExecutePlan {
 
     public void setTerm(Boolean term) {
         this.term = term;
-    }
-
-    public Integer getGrade() {
-        return grade;
-    }
-
-    public void setGrade(Integer grade) {
-        this.grade = grade;
     }
 
     public Boolean getStatus() {
