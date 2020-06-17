@@ -90,11 +90,12 @@ public class ObjectUtils {
     public static int toInt(String want, Supplier<? extends BaseException> supplier) {
         int i = want.indexOf(".");
         try {
-            if (i == 1) {
-                return Integer.parseInt(want);
+            /*if (i == 1) {
+                return Integer.parseInt(want.substring(0, i));
             } else {
                 return Integer.parseInt(want.substring(0, i));
-            }
+            }*/
+            return Integer.parseInt(want.substring(0, i));
         } catch (NumberFormatException e) {
             throw supplier.get();
         }
