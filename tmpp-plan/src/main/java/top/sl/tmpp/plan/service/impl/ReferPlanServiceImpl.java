@@ -36,18 +36,17 @@ public class ReferPlanServiceImpl implements ReferPlanService {
     private final CollegesMapper collegesMapper;
     private final BookMapper bookMapper;
     private final PlanBookMapper planBookMapper;
-    private final DepartmentMapper departmentMapper;
 
-    public ReferPlanServiceImpl(PlanMapper planMapper, ExecutePlanMapper executePlanMapper, CollegesMapper collegesMapper, BookMapper bookMapper, PlanBookMapper planBookMapper, DepartmentMapper departmentMapper) {
+    public ReferPlanServiceImpl(PlanMapper planMapper, ExecutePlanMapper executePlanMapper, CollegesMapper collegesMapper, BookMapper bookMapper, PlanBookMapper planBookMapper) {
         this.planMapper = planMapper;
         this.executePlanMapper = executePlanMapper;
         this.collegesMapper = collegesMapper;
         this.bookMapper = bookMapper;
         this.planBookMapper = planBookMapper;
-        this.departmentMapper = departmentMapper;
     }
 
-    @Override
+    /*二次修改：需要追加。不需要上传多个，不含检查*/
+    /*@Override
     public void referPlan(String year, boolean term, String teachingDepartment, String educationalLevel, String fileId) {
         String fileName = System.getProperty("java.io.tmpdir") + File.separator + fileId;
         File file = new File(fileName);
@@ -129,10 +128,47 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             e.printStackTrace();
         }
     }
+*/
+
+    /*不需要追加，需要上传多个，不含检查*/
+    @Override
+    public void referPlan(String year, boolean term, String teachingDepartment, String educationalLevel, String fileId) {
+        String fileName = System.getProperty("java.io.tmpdir") + File.separator + fileId;
+        File file = new File(fileName);
+        try (FileInputStream fileInputStream = new FileInputStream(file)) {
+            Workbook workbook = FileUtil.getWorkbook(fileInputStream, fileName);
+            if (workbook.getNumberOfSheets() < 1) {
+                throw new FileException("工作簿数量错误：" + workbook.getNumberOfSheets(), HttpStatus.BAD_REQUEST);
+            }
+            ExecutePlan executePlan = new ExecutePlan();
+                Sheet sheet = workbook.getSheetAt(0);
+                String newExecutePlanId = UUID.randomUUID().toString().replace("-", "");
+                executePlan.setId(newExecutePlanId);
+                executePlan.setYear(year);
+                executePlan.setTerm(term);
+                executePlan.setStatus(false);
+                executePlan.setFileType(fileId.substring(fileId.indexOf(".") + 1));
+                executePlan.setLevelId(educationalLevel);
+                executePlan.setDepartmentId(teachingDepartment);
+                Date d = new Date();
+                executePlan.setGmtModified(d);
+                executePlan.setGmtCreate(d);
+                executePlan.setFile(FileUtils.readFileToByteArray(file));
+                executePlanMapper.insert(executePlan);
+                AddPlan(executePlan, sheet);
+        } catch (FileNotFoundException e) {
+            throw new FileException("文件丢失，请重新上传", HttpStatus.NOT_FOUND);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     private void AddPlan(ExecutePlan executePlan, Sheet sheet) {
         List<Plan> planList = new ArrayList<>(sheet.getLastRowNum());
-        for (int rowIndex = 2; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
+        String grade = getCellValue(sheet.getRow(2), 2);
+        for (int rowIndex = 3; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
             logger.debug("开始获取第{}行", rowIndex);
             Row row = sheet.getRow(rowIndex);
             String collegeName = getCellValue(row, 1);
@@ -141,10 +177,13 @@ public class ReferPlanServiceImpl implements ReferPlanService {
             String courseName = getCellValue(row, 4);
             String type = getCellValue(row, 5);
             String clazz = getCellValue(row, 6);
-            String grade = getCellValue(row, 7);
-            String clazzNumber = getCellValue(row, 8);
-            String teacher = getCellValue(row, 9);
-            String remark = getCellValue(row, 10);
+            //String grade = getCellValue(row, 7);
+            //String clazzNumber = getCellValue(row, 8);
+            //String teacher = getCellValue(row, 9);
+            //String remark = getCellValue(row, 10);
+            String clazzNumber = getCellValue(row, 7);
+            String teacher = getCellValue(row, 8);
+            String remark = getCellValue(row, 9);
             //检查关键字段不为空
             checkCellNoneBlank(rowIndex, collegeName, startPro, courseCode, courseName, type, clazz, clazzNumber, teacher);
             final int tempRowIndex = rowIndex;
